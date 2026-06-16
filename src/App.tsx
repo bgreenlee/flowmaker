@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Coloris from '@melloware/coloris';
+import 'dialkit/styles.css';
 import '@melloware/coloris/dist/coloris.css';
 import { Canvas } from './components/Canvas';
 import { Sidebar } from './components/Sidebar';
@@ -11,6 +12,7 @@ function App() {
     Coloris.init();
     Coloris({
       el: '[data-coloris]',
+      wrap: false,
       themeMode: 'light',
       theme: 'default',
       format: 'hex',

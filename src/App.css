@@ -11,7 +11,12 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: row;
-  font-family: system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    'SF Pro Display',
+    'Helvetica Neue',
+    sans-serif;
   overflow: hidden;
 }
 
@@ -19,20 +24,36 @@ body {
   display: contents;
 }
 
-/* ── Sidebar ─────────────────────────────────────────── */
+/* ── Sidebar / panel ─────────────────────────────────── */
 #sidebar {
-  width: 200px;
+  width: 240px;
   flex-shrink: 0;
-  background: #f2efe9;
-  border-right: 1px solid #ddd8d0;
+  height: 100vh;
+  background: var(--dial-glass-bg);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  padding: 20px 16px 16px;
-  gap: 0;
+  padding: 12px 12px 8px;
+  overflow: hidden;
+}
+
+.flm-panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dial-text-root);
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.flm-panel-body {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   scrollbar-width: none;
 }
-#sidebar::-webkit-scrollbar {
+.flm-panel-body::-webkit-scrollbar {
   display: none;
 }
 
@@ -48,91 +69,145 @@ body {
   left: 0;
 }
 
-/* ── Section labels ──────────────────────────────────── */
-.section-label {
-  font-size: 8.5px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #aaa49b;
-  margin: 10px 0 8px;
-}
-.section-label:first-child {
-  margin-top: 0;
-}
-
-/* ── Rows ────────────────────────────────────────────── */
-.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 6px 0 4px;
-}
-.lbl {
-  font-size: 11px;
-  color: #6b6660;
-}
-.vdisp {
-  font-size: 10px;
-  color: #aaa49b;
-  font-family: monospace;
-}
-
-/* ── Sliders ─────────────────────────────────────────── */
-input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 4px;
-  background: #d0cbc3;
-  border-radius: 2px;
-  outline: none;
-  margin-bottom: 14px;
-  cursor: pointer;
-}
-input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  background: #6b6660;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.12s;
-}
-input[type='range']::-webkit-slider-thumb:hover {
-  background: #2a2520;
-}
-
-/* ── Color swatches ──────────────────────────────────── */
-.color-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.color-item {
+/* ── AnglePicker (specialized — no row container chrome) ─ */
+.flm-angle-row {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  flex: 1;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 12px;
+  background: var(--dial-surface);
+  border-radius: var(--dial-radius);
 }
-.color-item .lbl {
-  font-size: 10px;
-}
-.clr-field {
-  display: block;
+.flm-angle-header {
+  display: flex;
+  justify-content: space-between;
   width: 100%;
-  height: 28px;
-  position: relative;
-  border: 1px solid #d0cbc3;
-  border-radius: 5px;
-  overflow: hidden;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dial-text-label);
 }
-.clr-field input {
-  display: block;
+.flm-angle-value {
+  font-family: 'Geist Mono', ui-monospace, Consolas, monospace;
+}
+.flm-angle-dial {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  cursor: crosshair;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.flm-angle-dial svg {
   width: 100%;
   height: 100%;
+  display: block;
+}
+.flm-angle-ticks {
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.flm-angle-dial:hover .flm-angle-ticks {
+  opacity: 1;
+}
+
+/* ── Action buttons (play/pause + export) ────────────── */
+.flm-action-row {
+  display: flex;
+  gap: 6px;
+  padding: 8px 0;
+}
+.flm-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--dial-row-height);
+  height: var(--dial-row-height);
+  padding: 0;
+  flex-shrink: 0;
+  background: var(--dial-surface);
+  color: var(--dial-text-label);
+  border: none;
+  border-radius: var(--dial-radius);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.flm-icon-btn:hover {
+  background: var(--dial-surface-hover);
+  color: var(--dial-text-focus);
+}
+.flm-icon-btn.is-active {
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffffff;
+}
+.flm-icon-btn.is-active:hover {
+  background: rgba(0, 0, 0, 0.95);
+}
+.flm-download-btn {
+  flex: 1;
+  width: auto;
+  gap: 8px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+/* Hide bare data-coloris inputs until Coloris wraps them in .clr-field
+   (prevents the unwrapped text-input flash on mount). */
+input[data-coloris] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Compact mode for shorter viewports ──────────────── */
+@media (max-height: 800px) {
+  #sidebar {
+    padding: 8px 12px 6px;
+  }
+  .dialkit-root {
+    --dial-row-height: 30px;
+  }
+  .flm-angle-dial {
+    width: 88px;
+    height: 88px;
+  }
+  .flm-angle-row {
+    padding: 8px 10px 10px;
+    gap: 8px;
+  }
+  .flm-action-row {
+    padding: 6px 0;
+  }
+}
+
+/* ── Coloris swatch (the .clr-field wrapper becomes the swatch) ─── */
+.dialkit-color-inputs .clr-field {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.dialkit-color-inputs .clr-field:hover {
+  transform: scale(1.1);
+}
+.dialkit-color-inputs .clr-field input {
+  display: block;
+  position: static;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  pointer-events: auto;
   border: none;
   margin: 0;
   padding: 0;
@@ -140,8 +215,12 @@ input[type='range']::-webkit-slider-thumb:hover {
   background: none;
   font-size: 0;
   color: transparent;
+  outline: none;
 }
-.clr-field button {
+.dialkit-color-inputs .clr-field {
+  border: 1px solid var(--dial-border-hover);
+}
+.dialkit-color-inputs .clr-field button {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -149,94 +228,14 @@ input[type='range']::-webkit-slider-thumb:hover {
   top: 0;
   transform: none;
   border: none;
+  background: none;
+  background-image: none;
   margin: 0;
   padding: 0;
   box-shadow: none;
+  cursor: pointer;
 }
-.clr-field button::after {
+.dialkit-color-inputs .clr-field button::after {
   box-shadow: none;
   border-radius: 0;
-}
-
-/* ── Angle picker ────────────────────────────────────── */
-.angle-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-#angle-pick {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  cursor: crosshair;
-  user-select: none;
-  -webkit-user-select: none;
-}
-.vd-angle {
-  font-size: 11px;
-  color: #aaa49b;
-  font-family: monospace;
-}
-
-/* ── Buttons ─────────────────────────────────────────── */
-.btn-row {
-  display: flex;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 20px;
-}
-.abtn {
-  flex: 1;
-  background: none;
-  border: 1px solid #d0cbc3;
-  color: #6b6660;
-  height: 34px;
-  border-radius: 7px;
-  cursor: pointer;
-  font-size: 13px;
-  font-family: inherit;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.12s,
-    border-color 0.12s,
-    color 0.12s;
-}
-.abtn:hover {
-  background: #e8e3db;
-  border-color: #bfb9b1;
-  color: #2a2520;
-}
-.abtn.on {
-  background: #2a2520;
-  border-color: #2a2520;
-  color: #f2efe9;
-}
-.abtn.on:hover {
-  background: #3a3530;
-}
-
-.toggle-pill {
-  background: none;
-  border: 1px solid #d0cbc3;
-  color: #aaa49b;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 10px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  transition: all 0.12s;
-}
-.toggle-pill:hover {
-  border-color: #bfb9b1;
-  color: #6b6660;
-}
-.toggle-pill.on {
-  background: #2a2520;
-  border-color: #2a2520;
-  color: #f2efe9;
 }

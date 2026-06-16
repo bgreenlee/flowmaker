@@ -497,12 +497,13 @@ export function setAngle(rad: number) {
   if (!cfg.playing) drawFrame();
 }
 
-// ─── Export PNG ───────────────────────────────────────────────────────────────
-export function exportPng() {
+// ─── Export image ─────────────────────────────────────────────────────────────
+// JPEG @ q=0.92 — canvas has no alpha, and painterly output compresses well.
+export function exportImage() {
   drawFrame();
   const a = document.createElement('a');
-  a.download = 'painted_' + Date.now() + '.png';
-  a.href = canvas.toDataURL('image/png');
+  a.download = 'painted_' + Date.now() + '.jpg';
+  a.href = canvas.toDataURL('image/jpeg', 0.92);
   a.click();
 }
 
