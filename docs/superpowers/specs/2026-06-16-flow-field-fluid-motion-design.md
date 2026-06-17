@@ -94,27 +94,37 @@ is stable across frames and only changes when `t` advances.
   seamless wrap is preserved.
 - `writeQuads()` samples `curl2` per blob and applies displacement + blob
   rotation as above.
-- The intrinsic per-stroke wiggle in `computeBlobOffsets` (currently driven by
-  `cfg.turbulence`) is **baked in at a fixed modest level** equal to the current
-  default (`turbulence = 3` → `turbAmt = 0.3`), so static stills still look
-  organic at Flow = 0. `computeBlobOffsets` no longer reads `cfg.turbulence`.
+- `computeBlobOffsets` is **unchanged** — it still reads `cfg.turbulence` and
+  drives the intrinsic per-stroke wiggle exactly as today. The flow field is
+  purely additive on top of it.
+
+## Reproducing today's output exactly
+
+The full current behavior must remain reachable. This holds because:
+- `turbulence` is left untouched as its own control, so every existing
+  stroke-shape look is still producible.
+- `flow = 0` zeroes all flow displacement and blob rotation, so the engine
+  output is pixel-identical to today regardless of `flowScale` / `flowDrift`.
+
+So `flow = 0` + any `turbulence` = exactly the current tool.
 
 ## Config changes (`src/engine/config.ts`)
 
-Repurpose the existing `turbulence` key as flow-field strength and rename the
-control; add two new keys. Net UI change: +2 sliders.
+Keep `turbulence` exactly as-is. Add three new keys. Net UI change: +3 sliders.
 
-- `flow: number` (0–10) — flow-field displacement strength. Replaces
-  `turbulence`. Default `3`.
+- `flow: number` (0–10) — flow-field displacement strength. Default `0`, so the
+  tool opens in today's behavior until the user dials it up. (Reconsider during
+  planning: a small nonzero default could showcase the feature — decide then.)
 - `flowScale: number` (1–10) — spatial scale: tight churn → broad billows.
   Default `5`.
 - `flowDrift: number` (1–10) — how fast the field morphs over time. Default `4`.
 
-`turbulence` is removed from the `Config` interface and the `cfg` singleton.
+`turbulence` is unchanged in both the `Config` interface and the `cfg`
+singleton.
 
 ## UI changes (`src/components/FlowmakerControls.tsx`)
 
-- Remove the `Turbulence` slider from the **Stroke** folder.
+- Leave the `Turbulence` slider in the **Stroke** folder unchanged.
 - In the **Motion** folder, alongside `Speed`, add:
   - `Flow` (0–10)
   - `Flow Scale` (1–10)
