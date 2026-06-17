@@ -8,6 +8,52 @@
 
 **Tech Stack:** TypeScript, WebGL 1 (vanilla), React 19, Vite 8, Vitest.
 
+> **Status: implemented, with as-built amendments (see below).** The tasks below
+> are the original plan. Several details changed during implementation once
+> their visual artifacts surfaced; the amendments section records what actually
+> shipped. Where a task and an amendment disagree, **the amendment is correct.**
+> The matching design doc (`docs/superpowers/specs/2026-06-17-…-design.md`) has
+> been updated to the as-built design.
+
+## As-built amendments
+
+1. **Body is resampled from the live head, not drawn at the stored points.**
+   The plan's `trailPlacements(pts, count)` (Task 4) shipped as
+   `walkTrail(headX, headY, pts, count, spacing)`: it builds the polyline
+   `[head, …pts]` and samples at arc-length multiples of `spacing`, with blob 0
+   on the live head. Drawing the discrete stored points directly made the body
+   freeze between point-pushes and hop one `spacing` per push (the "jumpy" bug).
+   `engine.ts` calls `walkTrail(this.headX, this.headY, this.trail.pts, nSteps,
+   spacing)`.
+
+2. **Tangents come from neighbouring resampled positions, not the polyline
+   segment.** `walkTrail` runs a second pass setting each blob's tangent from its
+   neighbour samples; the per-segment tangent in the original sketch snapped at
+   vertex crossings and made the long blobs shimmer.
+
+3. **In-flight respawn enters from the upwind edge, not a random position.**
+   The plan's "random position + fade-in" respawn shipped as `inflowHead(W, H,
+   angle, margin, perpParam)` — the head is placed just past the upwind edge
+   (margin `blobLong`) with its body trailing off-screen, so it drifts on instead
+   of materializing mid-screen. The ~0.4s fade-in (`SPAWN_FADE_FRAMES = 24`)
+   remains, but for in-flight respawns only.
+
+4. **`rebuildStrokes` keeps strokes in place after the first build.** Only the
+   first build scatters (random) for instant coverage; later rebuilds re-seed
+   existing strokes' trails at their current heads (no mid-screen re-scatter on a
+   slider drag), trim extras, and add new strokes from the upwind edge.
+
+5. **Spawn distance vs cull distance are different.** Cull when the head passes
+   screen+`flowMargin` (a full trail, so the body clears); spawn just `blobLong`
+   past the upwind edge so strokes re-enter promptly (placing them a full
+   trail-length upwind starved the screen).
+
+6. **`advanceTrail` sub-steps the frame** (`sub = ceil(|V|/spacing · 4)`) so
+   points stay arc-spaced under fast flow; `walkTrail` uses a single forward
+   cursor across samples (O(points)). Per-blob quad constant arrays and the
+   `cos/sin(angle)` in `updateFlowParams` are hoisted/cached; tunables are named
+   (`BLOB_SPACING_FACTOR`, `SPAWN_FADE_FRAMES`, `FLOW_OCTAVES`, `FLOW_DRIFT`).
+
 ## Global Constraints
 
 - `flow = 0` ⇒ the curl term vanishes and `flowVelocity` returns exactly `[windX, windY]` ⇒ straight trails. Verify this invariant.
