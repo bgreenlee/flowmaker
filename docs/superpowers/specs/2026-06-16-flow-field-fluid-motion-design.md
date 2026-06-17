@@ -112,9 +112,9 @@ So `flow = 0` + any `turbulence` = exactly the current tool.
 
 Keep `turbulence` exactly as-is. Add three new keys. Net UI change: +3 sliders.
 
-- `flow: number` (0–10) — flow-field displacement strength. Default `0`, so the
-  tool opens in today's behavior until the user dials it up. (Reconsider during
-  planning: a small nonzero default could showcase the feature — decide then.)
+- `flow: number` (0–10) — flow-field displacement strength. Default `4`, so the
+  tool opens with visible fluid motion that showcases the feature without being
+  chaotic. (`flow = 0` still returns the exact pre-feature behavior.)
 - `flowScale: number` (1–10) — spatial scale: tight churn → broad billows.
   Default `5`.
 - `flowDrift: number` (1–10) — how fast the field morphs over time. Default `4`.
